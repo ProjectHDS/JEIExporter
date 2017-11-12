@@ -16,6 +16,7 @@ public class RenderItem {
     public static final int ITEM_SIZE = 16 * 2;
 
     public static String render(ItemStack itemStack) {
+        if (itemStack == null) return null;
         RenderHelper.setupRenderState(ITEM_SIZE);
         String itemName = TooltipJsonMap.add(itemStack);
         String filename = itemName.replaceAll(":", "_") + ".png";

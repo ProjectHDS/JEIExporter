@@ -53,6 +53,7 @@ public class RenderFluid {
     }
 
     private static void drawFluid(FluidStack fluidStack, int x, int y, int width, int height) {
+        if (fluidStack == null) return;
         TextureMap textureMapBlocks = Minecraft.getMinecraft().getTextureMapBlocks();
         ResourceLocation fluidStill = fluidStack.getFluid().getStill(fluidStack);
         TextureAtlasSprite fluidStillSprite = null;

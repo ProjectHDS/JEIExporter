@@ -26,6 +26,7 @@ public class TooltipJsonMap {
     }
 
     public static String add(ItemStack itemStack) {
+        if (itemStack == null) return "";
         String regName = createRegName(itemStack);
         String dispName = itemStack.getDisplayName();
         regToDisp.put(regName, dispName);
@@ -34,6 +35,7 @@ public class TooltipJsonMap {
     }
 
     public static String createRegName(ItemStack itemStack) {
+        if (itemStack == null) return "";
         String regName = itemStack.getItem().getRegistryName() + ":" + itemStack.getMetadata();
         if (itemStack.hasTagCompound())
             regName += ":" + Integer.toHexString(itemStack.getTagCompound().toString().hashCode());
@@ -45,6 +47,7 @@ public class TooltipJsonMap {
     }
 
     public static String add(FluidStack fluidStack) {
+        if (fluidStack == null) return "";
         String regName = "fluid:" + fluidStack.getFluid().getName();
         String dispName = fluidStack.getLocalizedName();
         regToDisp.put(regName, dispName);

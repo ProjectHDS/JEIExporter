@@ -11,11 +11,9 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.ingredients.GuiIngredient;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-//import java.awt.*;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -54,7 +52,11 @@ public class Adapters {
             out.name("w").value(rect.getWidth());
             out.name("h").value(rect.getHeight());
             out.name("p").value((getInt(xp, value) + (getInt(yp, value))) / 2);
-            out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).getCount() : 0);
+            if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
+                out.name("amount").value(value.getAllIngredients().get(0).getCount());
+            } else {
+                out.name("amount").value(0);
+            }
             out.name("stacks").beginArray();
             for (ItemStack itemStack : value.getAllIngredients())
                 out.value(RenderItem.render(itemStack));
@@ -79,7 +81,11 @@ public class Adapters {
             out.name("w").value(rect.getWidth());
             out.name("h").value(rect.getHeight());
             out.name("p").value((getInt(xp, value) + (getInt(yp, value))) / 2);
-            out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).amount : 0);
+            if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
+                out.name("amount").value(value.getAllIngredients().get(0).amount);
+            } else {
+                out.name("amount").value(0);
+            }
             out.name("fluids").beginArray();
             for (FluidStack fluidStack : value.getAllIngredients())
                 out.value(RenderFluid.render(fluidStack));
@@ -98,7 +104,11 @@ public class Adapters {
         public void write(JsonWriter out, IGuiIngredient<ItemStack> value) throws IOException {
             if (value.isInput()) return;
             out.beginObject();
-            out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).getCount() : 0);
+            if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
+                out.name("amount").value(value.getAllIngredients().get(0).getCount());
+            } else {
+                out.name("amount").value(0);
+            }
             out.name("stacks").beginArray();
             for (ItemStack itemStack : value.getAllIngredients())
                 out.value(RenderItem.render(itemStack));
@@ -117,7 +127,12 @@ public class Adapters {
         public void write(JsonWriter out, IGuiIngredient<FluidStack> value) throws IOException {
             if (value.isInput()) return;
             out.beginObject();
-            out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).amount : 0);
+            if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
+                out.name("amount").value(value.getAllIngredients().get(0).amount);
+            } else {
+                out.name("amount").value(0);
+            }
+
             out.name("fluids").beginArray();
             for (FluidStack fluidStack : value.getAllIngredients())
                 out.value(RenderFluid.render(fluidStack));
