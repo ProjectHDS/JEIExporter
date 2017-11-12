@@ -25,17 +25,16 @@ public class Adapters {
     public static final TypeAdapter<IRecipeCategory> drawable = new TypeAdapter<IRecipeCategory>() {
         @Override
         public void write(JsonWriter out, IRecipeCategory value) throws IOException {
-            out.beginObject();
             IDrawable drawable = value.getBackground();
-            out.name("w").value(drawable.getWidth());
-            out.name("h").value(drawable.getHeight());
-            out.name("tex").value(RenderIDrawable.render(drawable, value.getUid()));
+            out.name("title").value(value.getTitle());
+            out.name("width").value(drawable.getWidth());
+            out.name("height").value(drawable.getHeight());
+            out.name("texture").value(RenderIDrawable.render(drawable, value.getUid()));
             out.name("catalysts").beginArray();
             List<Object> catalysts = JEIConfig.getJeiRuntime().getRecipeRegistry().getRecipeCatalysts(value);
             for (Object itemStack : catalysts)
                 out.value(RenderItem.render((ItemStack)itemStack));
             out.endArray();
-            out.endObject();
         }
 
         @Override
@@ -44,9 +43,10 @@ public class Adapters {
         }
     };
 
-    public static final TypeAdapter<IGuiIngredient<ItemStack>> itemIngredient = new TypeAdapter<IGuiIngredient<ItemStack>>() {
+    public static final TypeAdapter<IGuiIngredient<ItemStack>> itemInput= new TypeAdapter<IGuiIngredient<ItemStack>>() {
         @Override
         public void write(JsonWriter out, IGuiIngredient<ItemStack> value) throws IOException {
+            if (!value.isInput()) return;
             out.beginObject();
             Rectangle rect = getRect(value);
             out.name("x").value(rect.getX());
@@ -54,7 +54,6 @@ public class Adapters {
             out.name("w").value(rect.getWidth());
             out.name("h").value(rect.getHeight());
             out.name("p").value((getInt(xp, value) + (getInt(yp, value))) / 2);
-            out.name("in").value(value.isInput());
             out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).getCount() : 0);
             out.name("stacks").beginArray();
             for (ItemStack itemStack : value.getAllIngredients())
@@ -69,9 +68,10 @@ public class Adapters {
         }
     };
 
-    public static final TypeAdapter<IGuiIngredient<FluidStack>> fluidIngredient = new TypeAdapter<IGuiIngredient<FluidStack>>() {
+    public static final TypeAdapter<IGuiIngredient<FluidStack>> fluidInput = new TypeAdapter<IGuiIngredient<FluidStack>>() {
         @Override
         public void write(JsonWriter out, IGuiIngredient<FluidStack> value) throws IOException {
+            if (!value.isInput()) return;
             out.beginObject();
             Rectangle rect = getRect(value);
             out.name("x").value(rect.getX());
@@ -79,7 +79,44 @@ public class Adapters {
             out.name("w").value(rect.getWidth());
             out.name("h").value(rect.getHeight());
             out.name("p").value((getInt(xp, value) + (getInt(yp, value))) / 2);
-            out.name("in").value(value.isInput());
+            out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).amount : 0);
+            out.name("fluids").beginArray();
+            for (FluidStack fluidStack : value.getAllIngredients())
+                out.value(RenderFluid.render(fluidStack));
+            out.endArray();
+            out.endObject();
+        }
+
+        @Override
+        public IGuiIngredient<FluidStack> read(JsonReader in) throws IOException {
+            return null;
+        }
+    };
+
+    public static final TypeAdapter<IGuiIngredient<ItemStack>> itemOutput = new TypeAdapter<IGuiIngredient<ItemStack>>() {
+        @Override
+        public void write(JsonWriter out, IGuiIngredient<ItemStack> value) throws IOException {
+            if (value.isInput()) return;
+            out.beginObject();
+            out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).getCount() : 0);
+            out.name("stacks").beginArray();
+            for (ItemStack itemStack : value.getAllIngredients())
+                out.value(RenderItem.render(itemStack));
+            out.endArray();
+            out.endObject();
+        }
+
+        @Override
+        public IGuiIngredient<ItemStack> read(JsonReader in) throws IOException {
+            return null;
+        }
+    };
+
+    public static final TypeAdapter<IGuiIngredient<FluidStack>> fluidOutput = new TypeAdapter<IGuiIngredient<FluidStack>>() {
+        @Override
+        public void write(JsonWriter out, IGuiIngredient<FluidStack> value) throws IOException {
+            if (value.isInput()) return;
+            out.beginObject();
             out.name("amount").value(value.getAllIngredients().size() > 0 ? value.getAllIngredients().get(0).amount : 0);
             out.name("fluids").beginArray();
             for (FluidStack fluidStack : value.getAllIngredients())

@@ -31,8 +31,6 @@ public class JEIJsonWriter {
 
     public void writeTitle(IRecipeCategory category) throws IOException {
         this.jsonWriter.beginObject();
-        this.jsonWriter.name("category").value(category.getTitle());
-        this.jsonWriter.name("bg");
         Adapters.drawable.write(this.jsonWriter, category);
         this.jsonWriter.name("recipes");
         this.jsonWriter.beginArray();
@@ -40,33 +38,60 @@ public class JEIJsonWriter {
 
     public void writeLayout(IRecipeLayout layout) throws IOException {
         this.jsonWriter.beginObject();
-        writeItems(layout.getItemStacks().getGuiIngredients().values());
-        writeFluids(layout.getFluidStacks().getGuiIngredients().values());
+
+        Collection<? extends IGuiIngredient<ItemStack>> items = layout.getItemStacks().getGuiIngredients().values();
+        Collection<? extends IGuiIngredient<FluidStack>> fluids = layout.getFluidStacks().getGuiIngredients().values();
+
+        this.jsonWriter.name("input");
+        this.jsonWriter.beginObject();
+
+        this.jsonWriter.name("items");
+        this.jsonWriter.beginArray();
+        for (IGuiIngredient<ItemStack> ingredient : items)
+            writeInputItem(ingredient);
+        this.jsonWriter.endArray();
+
+        this.jsonWriter.name("fluids");
+        this.jsonWriter.beginArray();
+        for (IGuiIngredient<FluidStack> ingredient : fluids)
+            writeInputFluid(ingredient);
+        this.jsonWriter.endArray();
+
+        this.jsonWriter.endObject();
+
+        this.jsonWriter.name("output");
+        this.jsonWriter.beginObject();
+
+        this.jsonWriter.name("items");
+        this.jsonWriter.beginArray();
+        for (IGuiIngredient<ItemStack> ingredient : items)
+            writeOutputItem(ingredient);
+        this.jsonWriter.endArray();
+
+        this.jsonWriter.name("fluids");
+        this.jsonWriter.beginArray();
+        for (IGuiIngredient<FluidStack> ingredient : fluids)
+            writeOutputFluid(ingredient);
+        this.jsonWriter.endArray();
+
+        this.jsonWriter.endObject();
         this.jsonWriter.endObject();
     }
 
-    public void writeItems(Collection<? extends IGuiIngredient<ItemStack>> ingredients) throws IOException {
-        this.jsonWriter.name("ingredientItems");
-        this.jsonWriter.beginArray();
-        for (IGuiIngredient<ItemStack> ingredient : ingredients)
-            writeItem(ingredient);
-        this.jsonWriter.endArray();
+    public void writeInputItem(IGuiIngredient<ItemStack> ingredient) throws IOException {
+        Adapters.itemInput.write(this.jsonWriter, ingredient);
     }
 
-    public void writeItem(IGuiIngredient<ItemStack> ingredient) throws IOException {
-        Adapters.itemIngredient.write(this.jsonWriter, ingredient);
+    public void writeInputFluid(IGuiIngredient<FluidStack> ingredient) throws IOException {
+        Adapters.fluidInput.write(this.jsonWriter, ingredient);
     }
 
-    public void writeFluids(Collection<? extends IGuiIngredient<FluidStack>> ingredients) throws IOException {
-        this.jsonWriter.name("ingredientFluids");
-        this.jsonWriter.beginArray();
-        for (IGuiIngredient<FluidStack> ingredient : ingredients)
-            writeFluid(ingredient);
-        this.jsonWriter.endArray();
+    public void writeOutputItem(IGuiIngredient<ItemStack> ingredient) throws IOException {
+        Adapters.itemOutput.write(this.jsonWriter, ingredient);
     }
 
-    public void writeFluid(IGuiIngredient<FluidStack> ingredient) throws IOException {
-        Adapters.fluidIngredient.write(this.jsonWriter, ingredient);
+    public void writeOutputFluid(IGuiIngredient<FluidStack> ingredient) throws IOException {
+        Adapters.fluidOutput.write(this.jsonWriter, ingredient);
     }
 
     public void close() throws IOException {
