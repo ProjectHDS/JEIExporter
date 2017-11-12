@@ -3,6 +3,7 @@ package jeiexporter.json;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import jeiexporter.jei.JEIConfig;
 import jeiexporter.render.RenderFluid;
 import jeiexporter.render.RenderIDrawable;
 import jeiexporter.render.RenderItem;
@@ -10,12 +11,15 @@ import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.ingredients.GuiIngredient;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+//import java.awt.*;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class Adapters {
     public static final TypeAdapter<IRecipeCategory> drawable = new TypeAdapter<IRecipeCategory>() {
@@ -26,6 +30,11 @@ public class Adapters {
             out.name("w").value(drawable.getWidth());
             out.name("h").value(drawable.getHeight());
             out.name("tex").value(RenderIDrawable.render(drawable, value.getUid()));
+            out.name("catalysts").beginArray();
+            List<Object> catalysts = JEIConfig.getJeiRuntime().getRecipeRegistry().getRecipeCatalysts(value);
+            for (Object itemStack : catalysts)
+                out.value(RenderItem.render((ItemStack)itemStack));
+            out.endArray();
             out.endObject();
         }
 
