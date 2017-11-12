@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import jeiexporter.config.ConfigHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,10 +17,12 @@ import java.util.Map;
 public class TooltipJsonMap {
     private static Map<String, String> regToDisp = new HashMap<>();
     private static Map<String, String> dispToReg = new HashMap<>();
+    private static Map<String, String> modRegToDisp = new HashMap<>();
 
     public static void clear() {
         regToDisp.clear();
         dispToReg.clear();
+        modRegToDisp.clear();
     }
 
     public static String add(ItemStack itemStack) {
@@ -59,6 +63,10 @@ public class TooltipJsonMap {
     public static void saveAsJson(String subFolder) throws IOException {
         asJson(new File(ConfigHandler.getConfigDir() + "/" + subFolder + "/tooltipMap.json"), regToDisp);
         asJson(new File(ConfigHandler.getConfigDir() + "/" + subFolder + "/lookupMap.json"), dispToReg);
+        for (Map.Entry<String, ModContainer> mod : Loader.instance().getIndexedModList().entrySet()) {
+            modRegToDisp.put(mod.getKey(), mod.getValue().getName());
+        }
+        asJson(new File(ConfigHandler.getConfigDir() + "/" + subFolder + "/modList.json"), modRegToDisp);
         clear();
     }
 }
