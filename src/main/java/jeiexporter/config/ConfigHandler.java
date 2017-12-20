@@ -18,7 +18,7 @@ public class ConfigHandler {
     public static void init(File configDir) {
         if (config == null) {
             configDir = new File(configDir, Reference.ID);
-            configDir.mkdir();
+            configDir.mkdirs();
             ConfigHandler.configDir = configDir;
             config = new Configuration(new File(configDir, Reference.ID + ".cfg"));
             loadConfig();
