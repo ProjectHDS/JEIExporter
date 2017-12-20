@@ -31,7 +31,7 @@ public class RenderFluid {
         drawFluid(fluidStack, 0, 0, FLUID_SIZE, FLUID_SIZE);
         GlStateManager.popMatrix();
         try {
-            File f = new File(ConfigHandler.getConfigDir(), "fluids/" + filename);
+            File f = new File(ConfigHandler.getConfigDir(), "items/" + filename);
             if (f.exists()) return fluidName;
             /*
              * We need to flip the image over here, because again, GL Y-zero is
