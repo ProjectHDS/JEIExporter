@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.awt.*;
 import java.io.IOException;
@@ -41,26 +42,24 @@ public class Adapters {
         }
     };
 
-    public static final TypeAdapter<IGuiIngredient<ItemStack>> itemInput= new TypeAdapter<IGuiIngredient<ItemStack>>() {
+    public static final TypeAdapter<IGuiIngredient<ItemStack>> item = new TypeAdapter<IGuiIngredient<ItemStack>>() {
         @Override
         public void write(JsonWriter out, IGuiIngredient<ItemStack> value) throws IOException {
-            if (!value.isInput()) return;
             out.beginObject();
-            Rectangle rect = getRect(value);
-            out.name("x").value(rect.getX());
-            out.name("y").value(rect.getY());
-            out.name("w").value(rect.getWidth());
-            out.name("h").value(rect.getHeight());
-            out.name("p").value((getInt(xp, value) + (getInt(yp, value))) / 2);
+
             if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
                 out.name("amount").value(value.getAllIngredients().get(0).getCount());
             } else {
                 out.name("amount").value(0);
             }
             out.name("stacks").beginArray();
-            for (ItemStack itemStack : value.getAllIngredients())
-                out.value(RenderItem.render(itemStack));
+            for (ItemStack itemStack : value.getAllIngredients()) {
+                out.beginObject();
+                out.name("name").value(RenderItem.render(itemStack));
+                out.endObject();
+            }
             out.endArray();
+
             out.endObject();
         }
 
@@ -70,73 +69,24 @@ public class Adapters {
         }
     };
 
-    public static final TypeAdapter<IGuiIngredient<FluidStack>> fluidInput = new TypeAdapter<IGuiIngredient<FluidStack>>() {
+    public static final TypeAdapter<IGuiIngredient<FluidStack>> fluid = new TypeAdapter<IGuiIngredient<FluidStack>>() {
         @Override
         public void write(JsonWriter out, IGuiIngredient<FluidStack> value) throws IOException {
-            if (!value.isInput()) return;
             out.beginObject();
-            Rectangle rect = getRect(value);
-            out.name("x").value(rect.getX());
-            out.name("y").value(rect.getY());
-            out.name("w").value(rect.getWidth());
-            out.name("h").value(rect.getHeight());
-            out.name("p").value((getInt(xp, value) + (getInt(yp, value))) / 2);
+
             if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
                 out.name("amount").value(value.getAllIngredients().get(0).amount);
-            } else {
-                out.name("amount").value(0);
-            }
-            out.name("fluids").beginArray();
-            for (FluidStack fluidStack : value.getAllIngredients())
-                out.value(RenderFluid.render(fluidStack));
-            out.endArray();
-            out.endObject();
-        }
-
-        @Override
-        public IGuiIngredient<FluidStack> read(JsonReader in) throws IOException {
-            return null;
-        }
-    };
-
-    public static final TypeAdapter<IGuiIngredient<ItemStack>> itemOutput = new TypeAdapter<IGuiIngredient<ItemStack>>() {
-        @Override
-        public void write(JsonWriter out, IGuiIngredient<ItemStack> value) throws IOException {
-            if (value.isInput()) return;
-            out.beginObject();
-            if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
-                out.name("amount").value(value.getAllIngredients().get(0).getCount());
             } else {
                 out.name("amount").value(0);
             }
             out.name("stacks").beginArray();
-            for (ItemStack itemStack : value.getAllIngredients())
-                out.value(RenderItem.render(itemStack));
-            out.endArray();
-            out.endObject();
-        }
-
-        @Override
-        public IGuiIngredient<ItemStack> read(JsonReader in) throws IOException {
-            return null;
-        }
-    };
-
-    public static final TypeAdapter<IGuiIngredient<FluidStack>> fluidOutput = new TypeAdapter<IGuiIngredient<FluidStack>>() {
-        @Override
-        public void write(JsonWriter out, IGuiIngredient<FluidStack> value) throws IOException {
-            if (value.isInput()) return;
-            out.beginObject();
-            if (value.getAllIngredients().size() > 0 && value.getAllIngredients().get(0) != null) {
-                out.name("amount").value(value.getAllIngredients().get(0).amount);
-            } else {
-                out.name("amount").value(0);
+            for (FluidStack fluidStack : value.getAllIngredients()) {
+                out.beginObject();
+                out.name("name").value(RenderFluid.render(fluidStack));
+                out.endObject();
             }
-
-            out.name("fluids").beginArray();
-            for (FluidStack fluidStack : value.getAllIngredients())
-                out.value(RenderFluid.render(fluidStack));
             out.endArray();
+
             out.endObject();
         }
 
@@ -145,14 +95,6 @@ public class Adapters {
             return null;
         }
     };
-
-    private static Rectangle getRect(Object object) {
-        try {
-            return (Rectangle) rect.get(object);
-        } catch (IllegalAccessException e) {
-            return null;
-        }
-    }
 
     private static int getInt(Field field, Object object) {
         try {
@@ -161,23 +103,4 @@ public class Adapters {
             return 0;
         }
     }
-
-    private static Field rect;
-    private static Field xp;
-    private static Field yp;
-
-    static {
-        try {
-            rect = GuiIngredient.class.getDeclaredField("rect");
-            rect.setAccessible(true);
-            xp = GuiIngredient.class.getDeclaredField("xPadding");
-            xp.setAccessible(true);
-            yp = GuiIngredient.class.getDeclaredField("yPadding");
-            yp.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }
