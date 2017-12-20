@@ -4,6 +4,9 @@ Required for [Minecraft Recipe Viewer](https://github.com/Danacus/RecipeViewer).
 
 Original by [way2muchnoise](https://github.com/way2muchnoise)
 
+## Download
+The latest version can be found [here](https://github.com/Danacus/JEIExporter/releases)
+
 ## Usage
 Install Minecraft Forge and place JEIExporter.jar in the mods folder. Please note that this version only supports Minecraft 1.12.
 
