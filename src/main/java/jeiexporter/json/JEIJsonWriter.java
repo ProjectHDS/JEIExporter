@@ -21,7 +21,7 @@ public class JEIJsonWriter {
     public static String getDir() {
         if (dir != null) return dir;
         dir = ConfigHandler.getConfigDir().getAbsolutePath() + "/exports/recipes/";
-        new File(dir).mkdir();
+        new File(dir).mkdirs();
         return dir;
     }
 
