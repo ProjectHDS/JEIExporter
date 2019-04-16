@@ -6,6 +6,8 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.IRecipeLogicStateListener;
 import mezz.jei.gui.recipes.RecipeGuiLogic;
+import mezz.jei.recipes.RecipeRegistry;
+import mezz.jei.runtime.JeiRuntime;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class LayoutFetcher {
     }
 
     private LayoutFetcher() {
-        this.logic = new RecipeGuiLogic(JEIConfig.getJeiRuntime().getRecipeRegistry(), new BlankStateListener());
+        this.logic = new RecipeGuiLogic(JEIConfig.getJeiRuntime().getRecipeRegistry(), new BlankStateListener(), JEIConfig.getIngredientRegistry());
     }
 
     public List<IRecipeLayout> getRecipes(ItemStack itemStack) {
