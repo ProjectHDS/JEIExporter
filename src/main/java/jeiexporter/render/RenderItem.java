@@ -23,7 +23,9 @@ public class RenderItem {
         GlStateManager.pushMatrix();
         GlStateManager.clearColor(0, 0, 0, 0);
         GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(itemStack, 0, 0);
+		try{
+			Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(itemStack, 0, 0);
+		}catch(Exception e){}
         GlStateManager.popMatrix();
         try {
             File f = new File(ConfigHandler.getConfigDir(), "items/" + filename);

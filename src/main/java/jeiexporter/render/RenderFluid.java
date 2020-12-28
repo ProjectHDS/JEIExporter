@@ -71,14 +71,27 @@ public class RenderFluid {
         float green = (colour >> 8 & 0xFF) / 255.0F;
         float blue = (colour & 0xFF) / 255.0F;
         GlStateManager.color(red, green, blue, 1.0F);
-
+		
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        buffer.pos(x, y + height, 0).tex(fluidStillSprite.getMinU(), fluidStillSprite.getMaxV()).endVertex();
-        buffer.pos(x + width, y + height, 0).tex(fluidStillSprite.getMaxU(), fluidStillSprite.getMaxV()).endVertex();
-        buffer.pos(x + width, y, 0).tex(fluidStillSprite.getMaxU(), fluidStillSprite.getMinV()).endVertex();
-        buffer.pos(x, y, 0).tex(fluidStillSprite.getMinU(), fluidStillSprite.getMinV()).endVertex();
-        tessellator.draw();
+		
+		try{
+		buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        }catch(Exception e){}
+		try{
+		buffer.pos(x, y + height, 0).tex(fluidStillSprite.getMinU(), fluidStillSprite.getMaxV()).endVertex();
+        }catch(Exception e){}
+		try{
+		buffer.pos(x + width, y + height, 0).tex(fluidStillSprite.getMaxU(), fluidStillSprite.getMaxV()).endVertex();
+        }catch(Exception e){}
+		try{
+		buffer.pos(x + width, y, 0).tex(fluidStillSprite.getMaxU(), fluidStillSprite.getMinV()).endVertex();
+        }catch(Exception e){}
+		try{
+		buffer.pos(x, y, 0).tex(fluidStillSprite.getMinU(), fluidStillSprite.getMinV()).endVertex();
+        }catch(Exception e){}
+		try{
+		tessellator.draw();
+		}catch(Exception e){}
     }
 }

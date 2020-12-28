@@ -19,7 +19,9 @@ public class RenderIDrawable {
         GlStateManager.pushMatrix();
         GlStateManager.clearColor(0, 0, 0, 0);
         GlStateManager.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        drawable.draw(Minecraft.getMinecraft());
+        try{
+			drawable.draw(Minecraft.getMinecraft());
+		}catch(Exception e){}
         GlStateManager.popMatrix();
         try {
             File f = new File(ConfigHandler.getConfigDir(), "bg/" + filename);

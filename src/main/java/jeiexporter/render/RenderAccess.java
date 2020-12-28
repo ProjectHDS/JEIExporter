@@ -45,63 +45,93 @@ public class RenderAccess {
     private static final GuiAccess GUI_ACCESS = new GuiAccess();
 
     public static void drawCenteredString(FontRenderer fontRendererIn, String text, int x, int y, int color) {
-        GUI_ACCESS.drawCenteredString(fontRendererIn, text, x, y, color);
-    }
+		try{
+			GUI_ACCESS.drawCenteredString(fontRendererIn, text, x, y, color);
+		}catch(Exception e){}
+	}
 
     public static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
-        GUI_ACCESS.drawGradientRect(left, top, right, bottom, startColor, endColor);
-    }
+		try{
+			GUI_ACCESS.drawGradientRect(left, top, right, bottom, startColor, endColor);
+		}catch(Exception e){}
+	}
 
     public static void drawHorizontalLine(int startX, int endX, int y, int color) {
-        GUI_ACCESS.drawHorizontalLine(startX, endX, y, color);
-    }
+		try{
+			GUI_ACCESS.drawHorizontalLine(startX, endX, y, color);
+		}catch(Exception e){}
+	}
 
     public static void drawString(FontRenderer fontRendererIn, String text, int x, int y, int color) {
-        GUI_ACCESS.drawString(fontRendererIn, text, x, y, color);
-    }
+		try{
+			GUI_ACCESS.drawString(fontRendererIn, text, x, y, color);
+		}catch(Exception e){}
+	}
 
     public static void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV) {
-        GUI_ACCESS.drawTexturedModalRect(xCoord, yCoord, minU, minV, maxU, maxV);
-    }
+		try{
+			GUI_ACCESS.drawTexturedModalRect(xCoord, yCoord, minU, minV, maxU, maxV);
+		}catch(Exception e){}
+	}
 
     public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
-        GUI_ACCESS.drawTexturedModalRect(x, y, textureX, textureY, width, height);
-    }
+		try{
+			GUI_ACCESS.drawTexturedModalRect(x, y, textureX, textureY, width, height);
+		}catch(Exception e){}
+	}
 
     public static void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn) {
-        GUI_ACCESS.drawTexturedModalRect(xCoord, yCoord, textureSprite, widthIn, heightIn);
-    }
+		try{
+			GUI_ACCESS.drawTexturedModalRect(xCoord, yCoord, textureSprite, widthIn, heightIn);
+		}catch(Exception e){}
+	}
 
     public static void drawVerticalLine(int x, int startY, int endY, int color) {
-        GUI_ACCESS.drawVerticalLine(x, startY, endY, color);
-    }
+		try{
+			GUI_ACCESS.drawVerticalLine(x, startY, endY, color);
+		}catch(Exception e){}
+	}
 
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
-        Gui.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
-    }
+        try{
+			Gui.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight);
+		}catch(Exception e){}
+	}
 
     public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
-        Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
+        try{
+			Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight);
+		}catch(Exception e){}
     }
 
     public static void drawRect(int left, int top, int right, int bottom, int color) {
-        Gui.drawRect(left, top, right, bottom, color);
+        try{
+			Gui.drawRect(left, top, right, bottom, color);
+		}catch(Exception e){}
     }
 
     public static void drawHoveringText(List<String> textLines, int x, int y) {
-        GUI_ACCESS.drawHoveringText(textLines, x, y);
-    }
+		try{
+			GUI_ACCESS.drawHoveringText(textLines, x, y);
+		}catch(Exception e){}
+	}
 
     public static void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font) {
-        GUI_ACCESS.drawHoveringText(textLines, x, y, font);
-    }
+        try{
+			GUI_ACCESS.drawHoveringText(textLines, x, y, font);
+		}catch(Exception e){}
+	}
 
     public static void renderToolTip(ItemStack stack, int x, int y) {
-        GUI_ACCESS.renderToolTip(stack, x, y);
-    }
+        try{
+			GUI_ACCESS.renderToolTip(stack, x, y);
+		}catch(Exception e){}
+	}
 
     public static void drawBackground(int width, int height) {
-        GUI_ACCESS.setWorldAndResolution(Minecraft.getMinecraft(), width, height);
-        GUI_ACCESS.drawBackground(0);
+		try{
+			GUI_ACCESS.setWorldAndResolution(Minecraft.getMinecraft(), width, height);
+			GUI_ACCESS.drawBackground(0);
+		}catch(Exception e){}
     }
 }

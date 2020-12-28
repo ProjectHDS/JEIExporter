@@ -18,7 +18,8 @@ public class TooltipJsonMap {
     private static Map<String, String> regToDisp = new HashMap<>();
     private static Map<String, String> dispToReg = new HashMap<>();
     private static Map<String, String> modRegToDisp = new HashMap<>();
-
+	private static long counter = 0;
+	
     public static void clear() {
         regToDisp.clear();
         dispToReg.clear();
@@ -28,7 +29,10 @@ public class TooltipJsonMap {
     public static String add(ItemStack itemStack) {
         if (itemStack == null) return "";
         String regName = createRegName(itemStack);
-        String dispName = itemStack.getDisplayName();
+		String dispName = "Description Error"+counter++;
+		try{
+			dispName = itemStack.getDisplayName();
+		}catch(Exception e){}
         regToDisp.put(regName, dispName);
         dispToReg.put(dispName, regName);
         return regName;
