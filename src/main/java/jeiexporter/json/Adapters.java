@@ -31,8 +31,13 @@ public class Adapters {
             out.name("texture").value(RenderIDrawable.render(drawable, value.getUid()));
             out.name("catalysts").beginArray();
             List<Object> catalysts = JEIConfig.getJeiRuntime().getRecipeRegistry().getRecipeCatalysts(value);
-            for (Object itemStack : catalysts)
-                out.value(RenderItem.render((ItemStack)itemStack));
+            for (Object itemStack : catalysts) {
+                if (itemStack instanceof ItemStack) {
+                    out.value(RenderItem.render((ItemStack) itemStack));
+                } else {
+                    out.value(itemStack.toString());
+                }
+            }
             out.endArray();
         }
 
