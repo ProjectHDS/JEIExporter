@@ -3,11 +3,11 @@ buildscript {
         jcenter()
         maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://maven.minecraftforge.net/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -16,11 +16,11 @@ apply plugin: 'idea'
 repositories {
     maven {
         name = "forge"
-        url = "http://dvs1.progwml6.com/files/maven"
+        url = "https://maven.minecraftforge.net/"
     }
     maven {
         name = "progwml6"
-        url =  "http://dvs1.progwml6.com/files/maven"
+        url =  "https://dvs1.progwml6.com/files/maven"
     }
 }
 
