@@ -10,7 +10,7 @@ public class ClientProxy extends CommonProxy {
     public void registerKeyBindings() {
         super.registerKeyBindings();
         ClientRegistry.registerKeyBinding(Settings.exportAll);
-        ClientRegistry.registerKeyBinding(Settings.craftTree);
+//        ClientRegistry.registerKeyBinding(Settings.craftTree);
     }
 
     @Override

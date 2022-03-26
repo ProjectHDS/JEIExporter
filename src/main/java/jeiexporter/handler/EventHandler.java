@@ -17,13 +17,13 @@ public class EventHandler {
         JEIExporter.exportAll();
     }
 
-    @SubscribeEvent
-    public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (Settings.craftTree.isPressed()) {
-            CraftingTree tree = new CraftingTree(new ItemStack(Items.COMPARATOR));
-            tree.getCraftItems();
-            tree.getBaseItems();
-            CraftingTree.clearCache();
-        }
-    }
+//    @SubscribeEvent
+//    public void onKeyInput(InputEvent.KeyInputEvent event) {
+//        if (Settings.craftTree.isPressed()) {
+//            CraftingTree tree = new CraftingTree(new ItemStack(Items.COMPARATOR));
+//            tree.getCraftItems();
+//            tree.getBaseItems();
+//            CraftingTree.clearCache();
+//        }
+//    }
 }
