@@ -38,7 +38,7 @@ public class JEIExporter {
                     if (Minecraft.getSystemTime() - lastUpdate > 33) // 30 FPS
                     {
                         Loading.render(
-                            I18n.format("Exporting all JEI categories"),
+                            I18n.format("jeiexporter.title"),
                             I18n.format("Exporting %s (%s/%s)", entry.getKey().getTitle(), index, size),
                             (index * 1F) / size,
                             I18n.format("%s/%s", i, layoutsSize),
