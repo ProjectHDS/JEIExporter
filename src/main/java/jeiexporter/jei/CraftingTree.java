@@ -91,16 +91,18 @@ public class CraftingTree {
 
     private static int getOutputCount(IRecipeLayout layout) {
         int count = 0;
-        for (IGuiIngredient<ItemStack> ingredient : layout.getItemStacks().getGuiIngredients().values())
-            if (!ingredient.isInput())
-                count += ingredient.getAllIngredients().get(0).getCount();
+        for (IGuiIngredient<ItemStack> ingredient : layout.getItemStacks().getGuiIngredients().values()) {
+            List<ItemStack> allIngredients = ingredient.getAllIngredients();
+            if (!ingredient.isInput() && !allIngredients.isEmpty())
+                count += allIngredients.get(0).getCount();
+        }
         return count;
     }
 
     private static boolean hasOutputStack(IRecipeLayout layout, ItemStack itemStack) {
         for (IGuiIngredient<ItemStack> ingredient : layout.getItemStacks().getGuiIngredients().values())
             if (!ingredient.isInput()
-                && ingredient.getAllIngredients().size() > 0
+                && ingredient.getAllIngredients().isEmpty()
                 && ItemStack.areItemsEqual(ingredient.getAllIngredients().get(0), itemStack))
                 return true;
         return false;
