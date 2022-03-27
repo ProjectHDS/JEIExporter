@@ -2,6 +2,7 @@ package jeiexporter.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import jeiexporter.JEIExporter;
 import jeiexporter.config.ConfigHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -68,12 +69,12 @@ public class TooltipJsonMap {
     }
 
     public static void saveAsJson(String subFolder) throws IOException {
-        asJson(new File(ConfigHandler.getConfigDir() + "/" + subFolder + "/tooltipMap.json"), regToDisp);
-        asJson(new File(ConfigHandler.getConfigDir() + "/" + subFolder + "/lookupMap.json"), dispToReg);
+        asJson(new File(JEIExporter.configDir + subFolder + "/tooltipMap.json"), regToDisp);
+        asJson(new File(JEIExporter.configDir + subFolder + "/lookupMap.json"), dispToReg);
         for (Map.Entry<String, ModContainer> mod : Loader.instance().getIndexedModList().entrySet()) {
             modRegToDisp.put(mod.getKey(), mod.getValue().getName());
         }
-        asJson(new File(ConfigHandler.getConfigDir() + "/" + subFolder + "/modList.json"), modRegToDisp);
+        asJson(new File(JEIExporter.configDir + subFolder + "/modList.json"), modRegToDisp);
         clear();
     }
 }

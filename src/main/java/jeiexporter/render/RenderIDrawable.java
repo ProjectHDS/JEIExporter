@@ -1,6 +1,7 @@
 package jeiexporter.render;
 
 import com.google.common.io.Files;
+import jeiexporter.JEIExporter;
 import jeiexporter.config.ConfigHandler;
 import mezz.jei.api.gui.IDrawable;
 import net.minecraft.client.Minecraft;
@@ -24,7 +25,7 @@ public class RenderIDrawable {
 		}catch(Exception e){}
         GlStateManager.popMatrix();
         try {
-            File f = new File(ConfigHandler.getConfigDir(), "bg/" + filename);
+            File f = new File(JEIExporter.configDir, "bg/" + filename);
             //if (f.exists()) return bgName;
             /*
              * We need to flip the image over here, because again, GL Y-zero is

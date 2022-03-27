@@ -1,7 +1,9 @@
 package jeiexporter.jei;
 
 import jeiexporter.json.JEIJsonWriter;
+import jeiexporter.json.NameMap;
 import jeiexporter.json.TooltipJsonMap;
+import jeiexporter.render.IconList;
 import jeiexporter.render.Loading;
 import jeiexporter.util.LogHelper;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -55,11 +57,9 @@ public class JEIExporter {
                 LogHelper.warn("Failed writing category: " + entry.getKey().getTitle());
             }
         }
-        try {
-            TooltipJsonMap.saveAsJson("exports");
-        } catch (IOException e) {
-            e.printStackTrace();
-            LogHelper.warn("Failed writing tooltip map");
-        }
+        NameMap.exportNames();
+        IconList.renderIngredients();
+        NameMap.clear();
+        IconList.clear();
     }
 }

@@ -1,5 +1,6 @@
 package jeiexporter.jei;
 
+import jeiexporter.config.ConfigHandler;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.Focus;
@@ -9,11 +10,9 @@ import mezz.jei.gui.recipes.RecipeGuiLogic;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
 import net.minecraft.item.ItemStack;
+import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LayoutFetcher {
     private static LayoutFetcher instance;
@@ -50,12 +49,14 @@ public class LayoutFetcher {
         this.logic.setRecipesPerPage(1);
         String startCategory = this.logic.getSelectedRecipeCategory().getUid();
         do {
-            List<IRecipeLayout> layouts = new ArrayList<>();
-            do {
-                layouts.addAll(this.logic.getRecipeLayouts(0, 0, 0));
-                this.logic.nextPage();
-            } while (!this.logic.getPageString().startsWith("1/"));
-            map.put(this.logic.getSelectedRecipeCategory(), layouts);
+            if (!ArrayUtils.contains(ConfigHandler.categoryBlacklist, this.logic.getSelectedRecipeCategory().getUid())) {
+                List<IRecipeLayout> layouts = new ArrayList<>();
+                do {
+                    layouts.addAll(this.logic.getRecipeLayouts(0, 0, 0));
+                    this.logic.nextPage();
+                } while (!this.logic.getPageString().startsWith("1/"));
+                map.put(this.logic.getSelectedRecipeCategory(), layouts);
+            }
             this.logic.nextRecipeCategory();
         } while (!this.logic.getSelectedRecipeCategory().getUid().equals(startCategory));
         return map;
