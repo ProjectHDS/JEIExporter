@@ -26,7 +26,7 @@ public class FluidHandler implements IIngredientHandler<FluidStack> {
 
     @Override
     public String getInternalId(FluidStack ingredient) {
-        return "fluid:" + ingredient.getFluid().getName();
+        return ingredient.getFluid().getName();
     }
 
     @Override
@@ -73,6 +73,11 @@ public class FluidHandler implements IIngredientHandler<FluidStack> {
     @Override
     public String getTag(FluidStack ingredient) {
         return Optional.ofNullable(ingredient.tag).map(NBTTagCompound::toString).orElse("");
+    }
+
+    @Override
+    public String getType() {
+        return "fluid";
     }
 
     @Override

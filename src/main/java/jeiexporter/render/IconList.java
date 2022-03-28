@@ -55,7 +55,7 @@ public class IconList {
             }
 
             IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(ingredient);
-            File file = new File("exports/items/" + id.replace(':', '_') + ".png");
+            File file = new File("exports/items/" + handler.getType() + "/" + id.replace(':', '_') + ".png");
             int height = handler.getImageHeight();
             int width = handler.getImageWidth();
             RenderHelper.setupRenderState(Math.max(height, width));

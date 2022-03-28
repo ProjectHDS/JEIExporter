@@ -86,6 +86,7 @@ public class JEIJsonWriter {
             if (element == null) continue;
             IIngredientHandler<T> handler = IngredientHandlers.getHandlerByIngredient(element);
             jsonWriter.beginObject();
+            jsonWriter.name("type").value(handler.getType());
             jsonWriter.name("name").value(handler.getInternalId(element));
             NameMap.add(element);
             IconList.add(element);

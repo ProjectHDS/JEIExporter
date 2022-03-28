@@ -51,6 +51,11 @@ public class ItemHandler implements IIngredientHandler<ItemStack> {
     }
 
     @Override
+    public String getType() {
+        return "item";
+    }
+
+    @Override
     public String getTag(ItemStack ingredient) {
         if (ingredient.hasTagCompound()) {
             return ingredient.getTagCompound().toString();

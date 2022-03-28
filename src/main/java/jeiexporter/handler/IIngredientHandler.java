@@ -22,6 +22,8 @@ public interface IIngredientHandler<T> {
 
     int getImageHeight();
 
+    String getType();
+
     default String getTag(T ingredient) {
         return "";
     }

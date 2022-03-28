@@ -24,6 +24,7 @@ public class CustomIngredientHandler<T> implements IIngredientHandler<T> {
     private final IIngredientHelper<T> helper;
     private final IIngredientRenderer<T> renderer;
     private final ToIntFunction<T> amountSupplier;
+    private final IIngredientType<T> type;
     private int imageWidth = 0;
     private int imageHeight = 0;
 
@@ -31,6 +32,7 @@ public class CustomIngredientHandler<T> implements IIngredientHandler<T> {
         this.helper = JEIConfig.getIngredientRegistry().getIngredientHelper(type);
         this.renderer = JEIConfig.getIngredientRegistry().getIngredientRenderer(type);
         this.amountSupplier = initAmountSupplier(type);
+        this.type = type;
         for (String ingredientIconSize : ConfigHandler.ingredientIconSizes) {
             String[] split = ingredientIconSize.split(";", 3);
             if (split[0].equals(type.getIngredientClass().getCanonicalName())) {
@@ -74,6 +76,11 @@ public class CustomIngredientHandler<T> implements IIngredientHandler<T> {
     @Override
     public int getImageHeight() {
         return imageHeight;
+    }
+
+    @Override
+    public String getType() {
+        return type.getIngredientClass().getCanonicalName();
     }
 
     private ToIntFunction<T> initAmountSupplier(IIngredientType<T> type) {

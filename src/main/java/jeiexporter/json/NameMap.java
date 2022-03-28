@@ -49,7 +49,8 @@ public class NameMap {
                 .map(name -> Minecraft.getMinecraft().getLanguageManager().getLanguage(name))
                 .forEach(languages::add);
         for (Language language : languages) {
-            if (!language.equals(mcLanguage)) {
+            boolean isCurrentLanguage = language.equals(mcLanguage);
+            if (!isCurrentLanguage) {
                 toggleLanguage(language);
             }
             for (Map.Entry<IIngredientType<?>, Map<String, ?>> iIngredientTypeMapEntry : ingredients.entrySet()) {
@@ -73,7 +74,14 @@ public class NameMap {
                         );
                         lastUpdate = Minecraft.getSystemTime();
                     }
-                    names.computeIfAbsent(entry.getKey(), it -> new HashMap<>()).put(language.getLanguageCode(), handler.getDisplayName(entry.getValue()));
+                    Map<String, String> entryMap = names.computeIfAbsent(entry.getKey(), it -> new HashMap<>());
+                    entryMap.put(language.getLanguageCode(), handler.getDisplayName(entry.getValue()));
+                    if (isCurrentLanguage) {
+                        String tag = handler.getTag(entry.getValue());
+                        if (!tag.isEmpty()) {
+                            entryMap.put("tag", tag);
+                        }
+                    }
                 }
             }
         }
