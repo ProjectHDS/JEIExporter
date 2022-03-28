@@ -8,7 +8,12 @@ import jeiexporter.handler.IIngredientHandler;
 import jeiexporter.handler.IngredientHandlers;
 import jeiexporter.jei.JEIConfig;
 import jeiexporter.render.Loading;
+import jeiexporter.util.CategoryRebuilder;
+import jeiexporter.util.LogHelper;
+import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.recipe.IIngredientType;
+import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.gui.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraft.client.resources.LanguageManager;
@@ -31,7 +36,6 @@ public class NameMap {
         Map<String, T> map = (Map<String, T>) ingredients.computeIfAbsent(JEIConfig.getIngredientRegistry().getIngredientType(ingredient), it -> new HashMap<>());
         map.put(IngredientHandlers.getHandlerByIngredient(ingredient).getInternalId(ingredient), ingredient);
     }
-
     public static void clear() {
         ingredients.clear();
     }
@@ -40,6 +44,7 @@ public class NameMap {
     public static void exportNames() {
         long lastUpdate = 0;
         Map<String, Map<String, String>> names = new HashMap<>();
+        Map<String, Map<String, String>> categoryNames = new HashMap<>();
         int index = 0;
         int nameSteps = ConfigHandler.exportedLanguage.length * ingredients.size();
         Language mcLanguage = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
@@ -84,10 +89,17 @@ public class NameMap {
                     }
                 }
             }
+            CategoryRebuilder categoryRebuilder = new CategoryRebuilder();
+            categoryRebuilder.rebuildCategory();
+            List<IRecipeCategory<?>> categories = categoryRebuilder.getCategories();
+            for (IRecipeCategory<?> category : categories) {
+                categoryNames.computeIfAbsent(category.getUid(), it -> new HashMap<>()).put(language.getLanguageCode(), category.getTitle());
+            }
         }
         toggleLanguage(mcLanguage);
         try {
             asJson(new File("exports/nameMap.json"), names);
+            asJson(new File("exports/categoryTitles.json"), categoryNames);
         } catch (IOException e) {
             e.printStackTrace();
         }

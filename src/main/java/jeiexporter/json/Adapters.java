@@ -14,11 +14,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class Adapters {
-    public static final TypeAdapter<IRecipeCategory> drawable = new TypeAdapter<IRecipeCategory>() {
+    public static final TypeAdapter<IRecipeCategory<?>> drawable = new TypeAdapter<IRecipeCategory<?>>() {
         @Override
-        public void write(JsonWriter out, IRecipeCategory value) throws IOException {
+        public void write(JsonWriter out, IRecipeCategory<?> value) throws IOException {
             IDrawable drawable = value.getBackground();
-            out.name("title").value(value.getTitle());
             out.name("width").value(drawable.getWidth());
             out.name("height").value(drawable.getHeight());
             out.name("texture").value(RenderIDrawable.render(drawable, value.getUid()));
@@ -35,7 +34,7 @@ public class Adapters {
         }
 
         @Override
-        public IRecipeCategory read(JsonReader in) throws IOException {
+        public IRecipeCategory<?> read(JsonReader in) throws IOException {
             return null;
         }
     };

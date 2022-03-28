@@ -1,12 +1,10 @@
 package jeiexporter.jei;
 
-import mezz.jei.api.IJeiRuntime;
-import mezz.jei.api.IModPlugin;
-import mezz.jei.api.IModRegistry;
-import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.*;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.gui.GuiHelper;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.runtime.JeiRuntime;
 
@@ -17,11 +15,13 @@ import java.util.List;
 @JEIPlugin
 public class JEIConfig implements IModPlugin {
     private static IJeiRuntime jeiRuntime;
+    private static IJeiHelpers helpers;
     private static IngredientRegistry ingredientRegistry;
 
     @Override
     public void register(IModRegistry registry) {
         ingredientRegistry = (IngredientRegistry)registry.getIngredientRegistry();
+        helpers = registry.getJeiHelpers();
     }
 
     @Override
@@ -42,5 +42,9 @@ public class JEIConfig implements IModPlugin {
         for (IRecipeCategory category : jeiRuntime.getRecipeRegistry().getRecipeCategories())
             list.add(category.getUid());
         return list;
+    }
+
+    public static IJeiHelpers getHelpers() {
+        return helpers;
     }
 }
