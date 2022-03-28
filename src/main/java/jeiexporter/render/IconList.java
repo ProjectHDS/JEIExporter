@@ -72,6 +72,7 @@ public class IconList {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            RenderHelper.tearDownRenderState();
         }
     }
 }

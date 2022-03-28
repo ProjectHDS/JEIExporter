@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.ToIntFunction;
 
@@ -25,6 +26,7 @@ public class CustomIngredientHandler<T> implements IIngredientHandler<T> {
     private final IIngredientRenderer<T> renderer;
     private final ToIntFunction<T> amountSupplier;
     private final IIngredientType<T> type;
+    private final Collection<T> allIngredient;
     private int imageWidth = 0;
     private int imageHeight = 0;
 
@@ -33,6 +35,7 @@ public class CustomIngredientHandler<T> implements IIngredientHandler<T> {
         this.renderer = JEIConfig.getIngredientRegistry().getIngredientRenderer(type);
         this.amountSupplier = initAmountSupplier(type);
         this.type = type;
+        this.allIngredient = JEIConfig.getIngredientRegistry().getAllIngredients(type);
         for (String ingredientIconSize : ConfigHandler.ingredientIconSizes) {
             String[] split = ingredientIconSize.split(";", 3);
             if (split[0].equals(type.getIngredientClass().getCanonicalName())) {
@@ -60,6 +63,12 @@ public class CustomIngredientHandler<T> implements IIngredientHandler<T> {
 
     @Override
     public void drawIngredient(Minecraft minecraft, T ingredient) {
+        if (!allIngredient.isEmpty()) {
+            T match = helper.getMatch(allIngredient, ingredient);
+            if (match != null) {
+                ingredient = match;
+            }
+        }
         renderer.render(minecraft, 0, 0, ingredient);
     }
 
