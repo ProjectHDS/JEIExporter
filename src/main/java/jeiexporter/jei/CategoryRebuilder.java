@@ -1,4 +1,4 @@
-package jeiexporter.util;
+package jeiexporter.jei;
 
 import jeiexporter.jei.JEIConfig;
 import mezz.jei.JustEnoughItems;
