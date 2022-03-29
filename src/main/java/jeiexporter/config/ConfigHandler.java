@@ -54,6 +54,9 @@ public class ConfigHandler {
             "en_us"
     };
 
+    @Config.Comment("If true, icons of ingredients are not exported")
+    public static boolean disableIconExporting = false;
+
     @Mod.EventBusSubscriber
     public static class ConfigSyncHandler {
         @SubscribeEvent

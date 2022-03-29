@@ -1,5 +1,6 @@
 package jeiexporter.jei;
 
+import jeiexporter.config.ConfigHandler;
 import jeiexporter.json.JEIJsonWriter;
 import jeiexporter.json.NameMap;
 import jeiexporter.json.TooltipJsonMap;
@@ -56,7 +57,9 @@ public class JEIExporter {
             }
         }
         NameMap.exportNames();
-        IconList.renderIngredients();
+        if (!ConfigHandler.disableIconExporting) {
+            IconList.renderIngredients();
+        }
         NameMap.clear();
         IconList.clear();
     }
