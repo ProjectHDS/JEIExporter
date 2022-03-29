@@ -37,22 +37,20 @@ public class IconList {
     @SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
     public static void renderIngredients() {
         int index = 0;
-        long lastUpdate = 0;
         int size = ingredients.size();
         for (Map.Entry<String, Object> entry : ingredients.entrySet()) {
             index++;
             String id = entry.getKey();
             Object ingredient = entry.getValue();
-            if (Minecraft.getSystemTime() - lastUpdate > 33) { // 30 FPS
-                Loading.render(
-                        "Exporting ingredient icon",
-                        "Exporting " + ingredient,
-                        (index * 1F) / size,
-                        String.format("%s/%s", index, size),
-                        1.0f
-                );
-                lastUpdate = Minecraft.getSystemTime();
-            }
+            int finalIndex = index;
+            Loading.render(() -> new Loading.Context(
+                            "Exporting ingredient icon",
+                            "Exporting " + ingredient,
+                            (finalIndex * 1F) / size,
+                            String.format("%s/%s", finalIndex, size),
+                            0.0f
+                    )
+            );
 
             IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(ingredient);
             File file = new File("exports/items/" + handler.getType() + "/" + id.replace(':', '_') + ".png");

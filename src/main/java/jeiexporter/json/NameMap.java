@@ -33,13 +33,13 @@ public class NameMap {
         Map<String, T> map = (Map<String, T>) ingredients.computeIfAbsent(JEIConfig.getIngredientRegistry().getIngredientType(ingredient), it -> new HashMap<>());
         map.put(IngredientHandlers.getHandlerByIngredient(ingredient).getInternalId(ingredient), ingredient);
     }
+
     public static void clear() {
         ingredients.clear();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void exportNames() {
-        long lastUpdate = 0;
         Map<String, Map<String, String>> names = new HashMap<>();
         Map<String, Map<String, String>> categoryNames = new HashMap<>();
         int index = 0;
@@ -66,16 +66,15 @@ public class NameMap {
                 int i = 0;
                 for (Map.Entry<String, ?> entry : entries) {
                     i++;
-                    if (Minecraft.getSystemTime() - lastUpdate > 33) { // 30 FPS
-                        Loading.render(
-                                "Exporting ingredient names for " + language.getLanguageCode(),
-                                String.format("Exporting %s (%s/%s)", type.getIngredientClass().getCanonicalName(), i, size),
-                                (i * 1F) / size,
-                                String.format("%s/%s", index, nameSteps),
-                                (i * 1F) / nameSteps
-                        );
-                        lastUpdate = Minecraft.getSystemTime();
-                    }
+                    int finalI = i;
+                    int finalIndex = index;
+                    Loading.render(() -> new Loading.Context(
+                            "Exporting ingredient names for " + language.getLanguageCode(),
+                            String.format("Exporting %s (%s/%s)", type.getIngredientClass().getCanonicalName(), finalI, size),
+                            (finalI * 1F) / size,
+                            String.format("%s/%s", finalIndex, nameSteps),
+                            (finalI * 1F) / nameSteps)
+                    );
                     Map<String, String> entryMap = names.computeIfAbsent(entry.getKey(), it -> new HashMap<>());
                     entryMap.put(language.getLanguageCode(), handler.getDisplayName(entry.getValue()));
                     if (isCurrentLanguage) {

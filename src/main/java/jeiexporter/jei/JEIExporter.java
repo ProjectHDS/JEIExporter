@@ -24,7 +24,6 @@ public class JEIExporter {
     }
 
     private static void export(Map<IRecipeCategory, List<IRecipeLayout>> map) {
-        long lastUpdate = 0;
         int size = map.size();
         int index = 0;
         for (Map.Entry<IRecipeCategory, List<IRecipeLayout>> entry : map.entrySet()) {
@@ -37,17 +36,16 @@ public class JEIExporter {
                 writer.writeTitle(entry.getKey());
                 for (int i = 0; i < layoutsSize; i++) {
                     if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) break;
-                    if (Minecraft.getSystemTime() - lastUpdate > 33) // 30 FPS
-                    {
-                        Loading.render(
-                            I18n.format("jeiexporter.title"),
-                            I18n.format("Exporting %s (%s/%s)", entry.getKey().getTitle(), index, size),
-                            (index * 1F) / size,
-                            I18n.format("%s/%s", i, layoutsSize),
-                            (i * 1F) / layoutsSize
-                        );
-                        lastUpdate = Minecraft.getSystemTime();
-                    }
+                    int finalIndex = index;
+                    int finalI = i;
+                    Loading.render(() -> new Loading.Context(
+                                    I18n.format("jeiexporter.title"),
+                                    I18n.format("Exporting %s (%s/%s)", entry.getKey().getTitle(), finalIndex, size),
+                                    (finalIndex * 1F) / size,
+                                    I18n.format("%s/%s", finalI, layoutsSize),
+                                    (finalI * 1F) / layoutsSize
+                            )
+                    );
                     writer.writeLayout(layouts.get(i));
                 }
                 writer.close();
