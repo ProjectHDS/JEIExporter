@@ -14,8 +14,10 @@ public class IngredientHandlers {
     private static final Map<IIngredientType<?>, IIngredientHandler<?>> HANDLERS = new HashMap<>();
 
     static {
-        registerHandler(VanillaTypes.ITEM, new ItemHandler());
+        ItemHandler itemHandler = new ItemHandler();
+        registerHandler(VanillaTypes.ITEM, itemHandler);
         registerHandler(VanillaTypes.FLUID, new FluidHandler());
+        registerHandler(JEIConfig.ORE_DICT_ENTRY, new OreDictHandler(itemHandler));
     }
 
     public static <T> void registerHandler(IIngredientType<T> type, IIngredientHandler<T> handler) {

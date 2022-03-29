@@ -5,16 +5,22 @@ import jeiexporter.JEIExporter;
 import jeiexporter.handler.IIngredientHandler;
 import jeiexporter.handler.IngredientHandlers;
 import jeiexporter.jei.JEIConfig;
+import jeiexporter.jei.OreDictEntry;
 import jeiexporter.render.IconList;
+import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
+import net.minecraft.item.ItemStack;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class JEIJsonWriter {
     private JsonWriter jsonWriter;
@@ -82,9 +88,9 @@ public class JEIJsonWriter {
             jsonWriter.name("amount").value(0);
         }
         jsonWriter.name("stacks").beginArray();
-        for (T element : ingredient.getAllIngredients()) {
+        for (Object element : getIngredients(ingredient)) {
             if (element == null) continue;
-            IIngredientHandler<T> handler = IngredientHandlers.getHandlerByIngredient(element);
+            IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(element);
             jsonWriter.beginObject();
             jsonWriter.name("type").value(handler.getType());
             jsonWriter.name("name").value(handler.getInternalId(element));
@@ -101,5 +107,19 @@ public class JEIJsonWriter {
         this.jsonWriter.endObject();
         this.jsonWriter.flush();
         this.jsonWriter.close();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> List<?> getIngredients(IGuiIngredient<T> ingredient) {
+        List<T> allIngredients = ingredient.getAllIngredients();
+        T displayedIngredient = ingredient.getDisplayedIngredient();
+        if (displayedIngredient instanceof ItemStack) {
+            int count = ((ItemStack) displayedIngredient).getCount();
+            String oreDict = Internal.getStackHelper().getOreDictEquivalent((Collection<ItemStack>) allIngredients);
+            if (oreDict != null) {
+                return Collections.singletonList(new OreDictEntry(oreDict, count));
+            }
+        }
+        return allIngredients;
     }
 }

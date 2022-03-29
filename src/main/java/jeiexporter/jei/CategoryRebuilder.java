@@ -1,6 +1,5 @@
 package jeiexporter.jei;
 
-import jeiexporter.jei.JEIConfig;
 import mezz.jei.JustEnoughItems;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
@@ -8,20 +7,18 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.startup.ProxyCommonClient;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import scala.actors.threadpool.Arrays;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author youyihj
  */
 public class CategoryRebuilder implements IRecipeCategoryRegistration {
-    private final List<IRecipeCategory<?>> categories = new ArrayList<>();
+    private final List<IRecipeCategory> categories = new ArrayList<>();
 
     @Override
     public void addRecipeCategories(IRecipeCategory... recipeCategories) {
-        categories.addAll(Arrays.asList(recipeCategories));
+        Collections.addAll(categories, recipeCategories);
     }
 
     @Override
@@ -29,7 +26,7 @@ public class CategoryRebuilder implements IRecipeCategoryRegistration {
         return JEIConfig.getHelpers();
     }
 
-    public List<IRecipeCategory<?>> getCategories() {
+    public List<IRecipeCategory> getCategories() {
         return categories;
     }
 

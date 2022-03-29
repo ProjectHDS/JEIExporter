@@ -31,7 +31,8 @@ public class NameMap {
     @SuppressWarnings("unchecked")
     public static <T> void add(T ingredient) {
         Map<String, T> map = (Map<String, T>) ingredients.computeIfAbsent(JEIConfig.getIngredientRegistry().getIngredientType(ingredient), it -> new HashMap<>());
-        map.put(IngredientHandlers.getHandlerByIngredient(ingredient).getInternalId(ingredient), ingredient);
+        IIngredientHandler<T> handler = IngredientHandlers.getHandlerByIngredient(ingredient);
+        map.put(handler.getType() + ":" + handler.getInternalId(ingredient), ingredient);
     }
 
     public static void clear() {
@@ -87,7 +88,7 @@ public class NameMap {
             }
             CategoryRebuilder categoryRebuilder = new CategoryRebuilder();
             categoryRebuilder.rebuildCategory();
-            List<IRecipeCategory<?>> categories = categoryRebuilder.getCategories();
+            List<IRecipeCategory> categories = categoryRebuilder.getCategories();
             for (IRecipeCategory<?> category : categories) {
                 categoryNames.computeIfAbsent(category.getUid(), it -> new HashMap<>()).put(language.getLanguageCode(), category.getTitle());
             }
