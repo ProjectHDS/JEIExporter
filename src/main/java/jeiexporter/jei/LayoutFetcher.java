@@ -1,6 +1,7 @@
 package jeiexporter.jei;
 
 import jeiexporter.config.ConfigHandler;
+import jeiexporter.render.Loading;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.Focus;
@@ -45,17 +46,30 @@ public class LayoutFetcher {
 
     public Map<IRecipeCategory, List<IRecipeLayout>> fetchAll() {
         Map<IRecipeCategory, List<IRecipeLayout>> map = new HashMap<>();
-        this.logic.setCategoryFocus(JEIConfig.recipeCategoryUids());
+        List<String> categoryUids = JEIConfig.recipeCategoryUids();
+        this.logic.setCategoryFocus(categoryUids);
         this.logic.setRecipesPerPage(1);
         String startCategory = this.logic.getSelectedRecipeCategory().getUid();
+        int index = 0;
         do {
-            if (!ArrayUtils.contains(ConfigHandler.categoryBlacklist, this.logic.getSelectedRecipeCategory().getUid())) {
+            index++;
+            IRecipeCategory selectedCategory = this.logic.getSelectedRecipeCategory();
+            String selectedCategoryUid = selectedCategory.getUid();
+            int finalIndex = index;
+            Loading.render(() -> new Loading.Context(
+                    "Fetching all jei recipes",
+                    "Fetching " + selectedCategory.getUid(),
+                    finalIndex * 1.0f / categoryUids.size(),
+                    String.format("%s/%s", finalIndex, categoryUids.size()),
+                    0.0f
+            ));
+            if (!ArrayUtils.contains(ConfigHandler.categoryBlacklist, selectedCategoryUid)) {
                 List<IRecipeLayout> layouts = new ArrayList<>();
                 do {
                     layouts.addAll(this.logic.getRecipeLayouts(0, 0, 0));
                     this.logic.nextPage();
                 } while (!this.logic.getPageString().startsWith("1/"));
-                map.put(this.logic.getSelectedRecipeCategory(), layouts);
+                map.put(selectedCategory, layouts);
             }
             this.logic.nextRecipeCategory();
         } while (!this.logic.getSelectedRecipeCategory().getUid().equals(startCategory));
