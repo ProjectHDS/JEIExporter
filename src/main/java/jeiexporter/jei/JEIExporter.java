@@ -33,7 +33,7 @@ public class JEIExporter {
             List<IRecipeLayout> layouts = entry.getValue();
             int layoutsSize = layouts.size();
             try {
-                JEIJsonWriter writer = new JEIJsonWriter(entry.getKey().getUid().replaceAll("[\\.\\s:]", "_"));
+                JEIJsonWriter writer = new JEIJsonWriter(entry.getKey().getUid().replaceAll("[\\.\\s:]", "__"));
                 writer.writeTitle(entry.getKey());
                 for (int i = 0; i < layoutsSize; i++) {
                     if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) break;
