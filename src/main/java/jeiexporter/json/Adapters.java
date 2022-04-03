@@ -3,6 +3,7 @@ package jeiexporter.json;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import jeiexporter.handler.IIngredientHandler;
 import jeiexporter.handler.IngredientHandlers;
 import jeiexporter.jei.JEIConfig;
 import jeiexporter.render.RenderIDrawable;
@@ -23,12 +24,12 @@ public class Adapters {
             out.name("texture").value(RenderIDrawable.render(drawable, value.getUid()));
             out.name("catalysts").beginArray();
             List<Object> catalysts = JEIConfig.getJeiRuntime().getRecipeRegistry().getRecipeCatalysts(value);
-            for (Object itemStack : catalysts) {
-                if (itemStack instanceof ItemStack) {
-                    out.value(IngredientHandlers.getHandlerByIngredient(itemStack).getInternalId(itemStack));
-                } else {
-                    out.value(itemStack.toString());
-                }
+            for (Object catalyst : catalysts) {
+                IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(catalyst);
+                out.beginObject();
+                out.name("type").value(handler.getType());
+                out.name("name").value(handler.getInternalId(catalyst));
+                out.endObject();
             }
             out.endArray();
         }
