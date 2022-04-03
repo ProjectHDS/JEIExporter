@@ -1,8 +1,6 @@
 package jeiexporter.json;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jeiexporter.config.ConfigHandler;
@@ -23,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author youyihj
@@ -47,8 +44,6 @@ public class NameMap {
         Minecraft minecraft = Minecraft.getMinecraft();
         Map<String, Map<String, Map<String, String>>> names = new HashMap<>();
         Map<String, Map<String, String>> categoryNames = new HashMap<>();
-        Map<String, Object> usedNames = new HashMap<>();
-        Set<String> sameNames = new HashSet<>();
         int index = 0;
         int nameSteps = ConfigHandler.exportedLanguage.length * ingredients.size();
         Language mcLanguage = minecraft.getLanguageManager().getCurrentLanguage();
@@ -63,6 +58,7 @@ public class NameMap {
                 toggleLanguage(language);
             }
             for (Map.Entry<IIngredientType<?>, Map<String, ?>> iIngredientTypeMapEntry : ingredients.entrySet()) {
+                Map<String, Object> usedNames = new HashMap<>();
                 if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) break;
                 index++;
                 Map<String, ?> ingredientMap = iIngredientTypeMapEntry.getValue();
@@ -87,10 +83,15 @@ public class NameMap {
                     Object ingredient = entry.getValue();
                     String displayName = handler.getDisplayName(ingredient);
                     if (usedNames.containsKey(displayName)) {
-                        sameNames.add(displayName);
                         List<String> tooltip = handler.getTooltip(minecraft, ingredient);
                         if (!tooltip.isEmpty()) {
                             entryMap.put(language.getLanguageCode() + "_tooltip", String.join("\\n", tooltip));
+                        }
+                        Object firstIngredient = usedNames.get(displayName);
+                        Map<String, String> firstIngredientEntry = ingredientInfo.computeIfAbsent(handler.getInternalId(firstIngredient), it -> new HashMap<>());
+                        List<String> firstIngredientTooltip = handler.getTooltip(minecraft, ingredient);
+                        if (!firstIngredientTooltip.isEmpty()) {
+                            firstIngredientEntry.put(language.getLanguageCode() + "_tooltip", String.join("\\n", firstIngredientTooltip));
                         }
                     } else {
                         usedNames.put(displayName, ingredient);
@@ -112,16 +113,6 @@ public class NameMap {
             }
         }
         toggleLanguage(mcLanguage);
-        for (String sameName : sameNames) {
-            Object firstIngredient = usedNames.get(sameName);
-            if (firstIngredient != null) {
-                IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(firstIngredient);
-                List<String> tooltip = handler.getTooltip(minecraft, firstIngredient);
-                if (!tooltip.isEmpty()) {
-                    names.get(handler.getType()).get(handler.getInternalId(firstIngredient)).put(mcLanguage.getLanguageCode() + "_tooltip", String.join("\\n", tooltip));
-                }
-            }
-        }
         try {
             asJson(new File("exports/nameMap.json"), names);
             asJson(new File("exports/categoryTitles.json"), categoryNames);
