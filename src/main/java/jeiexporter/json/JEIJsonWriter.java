@@ -7,6 +7,7 @@ import jeiexporter.handler.IngredientHandlers;
 import jeiexporter.jei.JEIConfig;
 import jeiexporter.jei.OreDictEntry;
 import jeiexporter.render.IconList;
+import jeiexporter.util.JeiHacks;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiIngredientGroup;
@@ -15,6 +16,7 @@ import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import net.minecraft.item.ItemStack;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -87,6 +89,9 @@ public class JEIJsonWriter {
         } else {
             jsonWriter.name("amount").value(0);
         }
+        Rectangle rect = JeiHacks.getRect(ingredient);
+        jsonWriter.name("x").value(rect.getX());
+        jsonWriter.name("y").value(rect.getY());
         jsonWriter.name("stacks").beginArray();
         for (Object element : getIngredients(ingredient)) {
             if (element == null) continue;
