@@ -1,7 +1,6 @@
 package jeiexporter.json;
 
 import com.google.gson.stream.JsonWriter;
-import jeiexporter.JEIExporter;
 import jeiexporter.handler.IIngredientHandler;
 import jeiexporter.handler.IngredientHandlers;
 import jeiexporter.jei.JEIConfig;
@@ -20,7 +19,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -119,8 +118,10 @@ public class JEIJsonWriter {
         List<T> allIngredients = ingredient.getAllIngredients();
         T displayedIngredient = ingredient.getDisplayedIngredient();
         if (displayedIngredient instanceof ItemStack) {
+            List<ItemStack> allItems = new ArrayList<>((List<ItemStack>) allIngredients);
+            allItems.removeIf(stack -> stack == null || stack.isEmpty());
             int count = ((ItemStack) displayedIngredient).getCount();
-            String oreDict = Internal.getStackHelper().getOreDictEquivalent((Collection<ItemStack>) allIngredients);
+            String oreDict = Internal.getStackHelper().getOreDictEquivalent(allItems);
             if (oreDict != null) {
                 return Collections.singletonList(new OreDictEntry(oreDict, count));
             }
