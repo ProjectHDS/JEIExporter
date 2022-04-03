@@ -25,7 +25,7 @@ public class RenderIDrawable {
 		}catch(Exception e){}
         GlStateManager.popMatrix();
         try {
-            File f = new File(JEIExporter.configDir, "bg/" + filename);
+            File f = new File("exports/bg/" + filename);
             //if (f.exists()) return bgName;
             /*
              * We need to flip the image over here, because again, GL Y-zero is
