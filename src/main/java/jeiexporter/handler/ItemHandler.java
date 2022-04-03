@@ -37,7 +37,10 @@ public class ItemHandler implements IIngredientHandler<ItemStack> {
 
     @Override
     public List<String> getTooltip(Minecraft minecraft, ItemStack ingredient) {
-        return ingredient.getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL);
+        List<String> tooltip = ingredient.getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL);
+        tooltip.remove(0); // the first tooltip is the display name of the item
+        tooltip.remove(ingredient.getItem().getRegistryName().getResourceDomain()); // remove the mod source
+        return tooltip;
     }
 
     @Override

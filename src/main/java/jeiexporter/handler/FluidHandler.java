@@ -67,7 +67,7 @@ public class FluidHandler implements IIngredientHandler<FluidStack> {
 
     @Override
     public List<String> getTooltip(Minecraft minecraft, FluidStack ingredient) {
-        return Collections.singletonList(ingredient.getLocalizedName());
+        return Collections.emptyList();
     }
 
     @Override
