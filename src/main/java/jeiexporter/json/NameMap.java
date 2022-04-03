@@ -32,7 +32,7 @@ public class NameMap {
     public static <T> void add(T ingredient) {
         Map<String, T> map = (Map<String, T>) ingredients.computeIfAbsent(JEIConfig.getIngredientRegistry().getIngredientType(ingredient), it -> new HashMap<>());
         IIngredientHandler<T> handler = IngredientHandlers.getHandlerByIngredient(ingredient);
-        map.put(handler.getType() + ":" + handler.getInternalId(ingredient), ingredient);
+        map.put(handler.getInternalId(ingredient), ingredient);
     }
 
     public static void clear() {
@@ -41,7 +41,7 @@ public class NameMap {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void exportNames() {
-        Map<String, Map<String, String>> names = new HashMap<>();
+        Map<String, Map<String, Map<String, String>>> names = new HashMap<>();
         Map<String, Map<String, String>> categoryNames = new HashMap<>();
         int index = 0;
         int nameSteps = ConfigHandler.exportedLanguage.length * ingredients.size();
@@ -62,6 +62,8 @@ public class NameMap {
                 Map<String, ?> ingredientMap = iIngredientTypeMapEntry.getValue();
                 IIngredientType<?> type = iIngredientTypeMapEntry.getKey();
                 IIngredientHandler handler = IngredientHandlers.getHandler(type);
+                Map<String, Map<String, String>> ingredientsInfo = new HashMap<>();
+                names.put(handler.getType(), ingredientsInfo);
                 Set<? extends Map.Entry<String, ?>> entries = ingredientMap.entrySet();
                 int size = entries.size();
                 int i = 0;
@@ -76,7 +78,7 @@ public class NameMap {
                             String.format("%s/%s", finalIndex, nameSteps),
                             (finalI * 1F) / nameSteps)
                     );
-                    Map<String, String> entryMap = names.computeIfAbsent(entry.getKey(), it -> new HashMap<>());
+                    Map<String, String> entryMap = ingredientsInfo.computeIfAbsent(entry.getKey(), it -> new HashMap<>());
                     entryMap.put(language.getLanguageCode(), handler.getDisplayName(entry.getValue()));
                     if (isCurrentLanguage) {
                         String tag = handler.getTag(entry.getValue());
@@ -102,7 +104,7 @@ public class NameMap {
         }
     }
 
-    public static void asJson(File location, Map<String, Map<String, String>> map) throws IOException {
+    public static void asJson(File location, Map<?, ?> map) throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileUtils.write(location, gson.toJson(map), StandardCharsets.UTF_8);
     }
