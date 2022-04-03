@@ -3,6 +3,7 @@ package jeiexporter.handler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 
@@ -13,6 +14,10 @@ public class ItemHandler implements IIngredientHandler<ItemStack> {
 
     @Override
     public String getDisplayName(ItemStack ingredient) {
+        if (ingredient.getMetadata() == OreDictionary.WILDCARD_VALUE) { // 32767 -> 0
+            ingredient = ingredient.copy();
+            ingredient.setItemDamage(0);
+        }
         return ingredient.getDisplayName();
     }
 
