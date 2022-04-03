@@ -9,12 +9,13 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.IRecipeLogicStateListener;
 import mezz.jei.gui.recipes.RecipeGuiLogic;
-import mezz.jei.recipes.RecipeRegistry;
-import mezz.jei.runtime.JeiRuntime;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LayoutFetcher {
     private static LayoutFetcher instance;
@@ -53,23 +54,26 @@ public class LayoutFetcher {
         String startCategory = this.logic.getSelectedRecipeCategory().getUid();
         int index = 0;
         do {
+            int recipesNumber = 0;
             index++;
             IRecipeCategory selectedCategory = this.logic.getSelectedRecipeCategory();
             String selectedCategoryUid = selectedCategory.getUid();
             int finalIndex = index;
-            Loading.render(() -> new Loading.Context(
-                    "Fetching all jei recipes",
-                    "Fetching " + selectedCategory.getUid(),
-                    finalIndex * 1.0f / categoryUids.size(),
-                    String.format("%s/%s", finalIndex, categoryUids.size()),
-                    0.0f
-            ));
             if (!ArrayUtils.contains(ConfigHandler.categoryBlacklist, selectedCategoryUid)) {
                 List<IRecipeLayout> layouts = new ArrayList<>();
                 LogHelper.info("Begin fetching category: " + selectedCategoryUid);
                 do {
+                    recipesNumber++;
+                    int finalRecipesNumber = recipesNumber;
                     layouts.addAll(this.logic.getRecipeLayouts(0, 0, 0));
                     this.logic.nextPage();
+                    Loading.render(() -> new Loading.Context(
+                            "Fetching all jei recipes",
+                            "Fetching " + selectedCategory.getUid() + " (" + finalRecipesNumber + " recipes fetched)",
+                            finalIndex * 1.0f / categoryUids.size(),
+                            String.format("%s/%s", finalIndex, categoryUids.size()),
+                            0.0f
+                    ));
                 } while (!this.logic.getPageString().startsWith("1/"));
                 map.put(selectedCategory, layouts);
             }

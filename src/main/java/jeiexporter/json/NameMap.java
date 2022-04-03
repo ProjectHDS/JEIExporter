@@ -45,13 +45,13 @@ public class NameMap {
         Map<String, Map<String, Map<String, String>>> names = new HashMap<>();
         Map<String, Map<String, String>> categoryNames = new HashMap<>();
         int index = 0;
-        int nameSteps = ConfigHandler.exportedLanguage.length * ingredients.size();
         Language mcLanguage = minecraft.getLanguageManager().getCurrentLanguage();
         List<Language> languages = Lists.newArrayList(mcLanguage);
         Arrays.stream(ConfigHandler.exportedLanguage)
                 .filter(name -> !name.equals(mcLanguage.getLanguageCode()))
                 .map(name -> minecraft.getLanguageManager().getLanguage(name))
                 .forEach(languages::add);
+        int nameSteps = ingredients.size() * languages.size();
         for (Language language : languages) {
             boolean isCurrentLanguage = language.equals(mcLanguage);
             if (!isCurrentLanguage) {
