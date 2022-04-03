@@ -62,8 +62,7 @@ public class NameMap {
                 Map<String, ?> ingredientMap = iIngredientTypeMapEntry.getValue();
                 IIngredientType<?> type = iIngredientTypeMapEntry.getKey();
                 IIngredientHandler handler = IngredientHandlers.getHandler(type);
-                Map<String, Map<String, String>> ingredientsInfo = new HashMap<>();
-                names.put(handler.getType(), ingredientsInfo);
+                Map<String, Map<String, String>> ingredientInfo = names.computeIfAbsent(handler.getType(), (it) -> new HashMap<>());
                 Set<? extends Map.Entry<String, ?>> entries = ingredientMap.entrySet();
                 int size = entries.size();
                 int i = 0;
@@ -78,7 +77,7 @@ public class NameMap {
                             String.format("%s/%s", finalIndex, nameSteps),
                             (finalI * 1F) / nameSteps)
                     );
-                    Map<String, String> entryMap = ingredientsInfo.computeIfAbsent(entry.getKey(), it -> new HashMap<>());
+                    Map<String, String> entryMap = ingredientInfo.computeIfAbsent(entry.getKey(), it -> new HashMap<>());
                     entryMap.put(language.getLanguageCode(), handler.getDisplayName(entry.getValue()));
                     if (isCurrentLanguage) {
                         String tag = handler.getTag(entry.getValue());
