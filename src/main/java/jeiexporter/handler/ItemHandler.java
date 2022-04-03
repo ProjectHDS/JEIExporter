@@ -48,7 +48,8 @@ public class ItemHandler implements IIngredientHandler<ItemStack> {
         }
         List<String> tooltip = ingredient.getTooltip(null, ITooltipFlag.TooltipFlags.NORMAL);
         tooltip.remove(0); // the first tooltip is the display name of the item
-        tooltip.remove(ingredient.getItem().getRegistryName().getResourceDomain()); // remove the mod source
+        ItemStack finalIngredient = ingredient;
+        tooltip.removeIf(s -> s.matches(("(§\\w)?" + finalIngredient.getItem().getCreatorModId(finalIngredient)))); // remove the mod source
         return tooltip;
     }
 
