@@ -50,7 +50,6 @@ public class JEIExporter {
                     writer.writeLayout(layouts.get(i));
                 }
                 writer.close();
-                LogHelper.info("Saved category: " + entry.getKey().getTitle());
             } catch (IOException e) {
                 e.printStackTrace();
                 LogHelper.warn("Failed writing category: " + entry.getKey().getTitle());

@@ -2,6 +2,7 @@ package jeiexporter.jei;
 
 import jeiexporter.config.ConfigHandler;
 import jeiexporter.render.Loading;
+import jeiexporter.util.LogHelper;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.gui.Focus;
@@ -65,6 +66,7 @@ public class LayoutFetcher {
             ));
             if (!ArrayUtils.contains(ConfigHandler.categoryBlacklist, selectedCategoryUid)) {
                 List<IRecipeLayout> layouts = new ArrayList<>();
+                LogHelper.info("Begin fetching category: " + selectedCategoryUid);
                 do {
                     layouts.addAll(this.logic.getRecipeLayouts(0, 0, 0));
                     this.logic.nextPage();
