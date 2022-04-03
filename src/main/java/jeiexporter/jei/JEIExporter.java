@@ -3,13 +3,11 @@ package jeiexporter.jei;
 import jeiexporter.config.ConfigHandler;
 import jeiexporter.json.JEIJsonWriter;
 import jeiexporter.json.NameMap;
-import jeiexporter.json.TooltipJsonMap;
 import jeiexporter.render.IconList;
 import jeiexporter.render.Loading;
 import jeiexporter.util.LogHelper;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 
@@ -33,6 +31,7 @@ public class JEIExporter {
             List<IRecipeLayout> layouts = entry.getValue();
             int layoutsSize = layouts.size();
             try {
+                LogHelper.info("Begin saving category: " + entry.getKey().getUid());
                 JEIJsonWriter writer = new JEIJsonWriter(entry.getKey().getUid().replaceAll("[\\.\\s:]", "__"));
                 writer.writeTitle(entry.getKey());
                 for (int i = 0; i < layoutsSize; i++) {
@@ -55,8 +54,10 @@ public class JEIExporter {
                 LogHelper.warn("Failed writing category: " + entry.getKey().getTitle());
             }
         }
+        LogHelper.info("Exporting ingredient names...");
         NameMap.exportNames();
         if (!ConfigHandler.disableIconExporting) {
+            LogHelper.info("Rendering ingredients");
             IconList.renderIngredients();
         }
         NameMap.clear();
