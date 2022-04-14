@@ -20,12 +20,17 @@ repositories {
     }
     maven {
         name = "progwml6"
-        url =  "https://dvs1.progwml6.com/files/maven"
+        url = "https://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        name = "curseforge"
+        url = "https://cfa2.cursemaven.com"
     }
 }
 
 dependencies {
     deobfCompile "mezz.jei:jei_${version_minecraft}:${version_jei}"
+    deobfCompile "curse.maven:justenoughresources-240630:2728585"
     compile fileTree(dir: 'lib', include: '*.jar')
 }
 

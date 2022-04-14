@@ -1,8 +1,13 @@
 package jeiexporter.json;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
 import jeiexporter.handler.IIngredientHandler;
+import jeiexporter.handler.IRecipeExtraDataWrapper;
 import jeiexporter.handler.IngredientHandlers;
+import jeiexporter.handler.RecipeExtraDataWrapperFactories;
 import jeiexporter.jei.JEIConfig;
 import jeiexporter.jei.OreDictEntry;
 import jeiexporter.render.IconList;
@@ -13,15 +18,14 @@ import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.*;
 
 public class JEIJsonWriter {
     private JsonWriter jsonWriter;
@@ -35,7 +39,7 @@ public class JEIJsonWriter {
     }
 
     public JEIJsonWriter(String filename) throws IOException {
-        this.jsonWriter = new JsonWriter(new FileWriter(getDir() + filename + ".json"));
+        this.jsonWriter = new JsonWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(getDir() + filename + ".json")), StandardCharsets.UTF_8));
         this.jsonWriter.setIndent("  ");
     }
 
@@ -47,7 +51,15 @@ public class JEIJsonWriter {
     }
 
     public void writeLayout(IRecipeLayout layout) throws IOException {
+        IRecipeWrapper recipeWrapper = JeiHacks.getRecipeWrapper(layout);
+        Optional<IRecipeExtraDataWrapper> extraDataWrapper = RecipeExtraDataWrapperFactories.buildWrapper(recipeWrapper);
         this.jsonWriter.beginObject();
+        if (extraDataWrapper.isPresent()) {
+            Map<String, JsonElement> recipeExtraData = extraDataWrapper.get().getRecipeExtraData();
+            for (Map.Entry<String, JsonElement> entry : recipeExtraData.entrySet()) {
+                writeEntry(entry);
+            }
+        }
         this.jsonWriter.name("input");
         this.jsonWriter.beginObject();
         this.jsonWriter.name("items");
@@ -56,7 +68,7 @@ public class JEIJsonWriter {
             IGuiIngredientGroup<?> group = layout.getIngredientsGroup(type);
             for (IGuiIngredient<?> ingredient : group.getGuiIngredients().values()) {
                 if (ingredient.isInput()) {
-                    writeIngredient(ingredient);
+                    writeIngredient(ingredient, extraDataWrapper.orElse(null));
                 }
             }
         }
@@ -71,7 +83,7 @@ public class JEIJsonWriter {
             IGuiIngredientGroup<?> group = layout.getIngredientsGroup(type);
             for (IGuiIngredient<?> ingredient : group.getGuiIngredients().values()) {
                 if (!ingredient.isInput()) {
-                    writeIngredient(ingredient);
+                    writeIngredient(ingredient, extraDataWrapper.orElse(null));
                 }
             }
         }
@@ -80,7 +92,7 @@ public class JEIJsonWriter {
         this.jsonWriter.endObject();
     }
 
-    public <T> void writeIngredient(IGuiIngredient<T> ingredient) throws IOException {
+    public <T> void writeIngredient(IGuiIngredient<T> ingredient, IRecipeExtraDataWrapper extraDataWrapper) throws IOException {
         this.jsonWriter.beginObject();
         if (!ingredient.getAllIngredients().isEmpty() && ingredient.getAllIngredients().get(0) != null) {
             IIngredientHandler<T> handler = IngredientHandlers.getHandlerByIngredient(ingredient.getAllIngredients().get(0));
@@ -103,6 +115,12 @@ public class JEIJsonWriter {
             jsonWriter.endObject();
         }
         jsonWriter.endArray();
+        if (extraDataWrapper != null) {
+            Map<String, JsonElement> ingredientExtraData = extraDataWrapper.getIngredientExtraData(ingredient);
+            for (Map.Entry<String, JsonElement> entry : ingredientExtraData.entrySet()) {
+                writeEntry(entry);
+            }
+        }
         jsonWriter.endObject();
     }
 
@@ -127,5 +145,38 @@ public class JEIJsonWriter {
             }
         }
         return allIngredients;
+    }
+
+    private void writeEntry(Map.Entry<String, JsonElement> entry) throws IOException {
+        this.jsonWriter.name(entry.getKey());
+        this.writeElement(entry.getValue());
+    }
+
+    private void writeElement(JsonElement element) throws IOException {
+        if (element.isJsonNull()) {
+            this.jsonWriter.nullValue();
+        } else if (element.isJsonPrimitive()) {
+            JsonPrimitive jsonPrimitive = element.getAsJsonPrimitive();
+            if (jsonPrimitive.isBoolean()) {
+                this.jsonWriter.value(jsonPrimitive.getAsBoolean());
+            } else if (jsonPrimitive.isNumber()) {
+                this.jsonWriter.value(jsonPrimitive.getAsNumber());
+            } else if (jsonPrimitive.isString()) {
+                this.jsonWriter.value(jsonPrimitive.getAsString());
+            }
+        } else if (element.isJsonArray()) {
+            this.jsonWriter.beginArray();
+            for (JsonElement jsonElement : element.getAsJsonArray()) {
+                this.writeElement(jsonElement);
+            }
+            this.jsonWriter.endArray();
+        } else if (element.isJsonObject()) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            this.jsonWriter.beginObject();
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                writeEntry(entry);
+            }
+            this.jsonWriter.endObject();
+        }
     }
 }

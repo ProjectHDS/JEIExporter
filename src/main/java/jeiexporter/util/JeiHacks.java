@@ -2,9 +2,12 @@ package jeiexporter.util;
 
 import mezz.jei.api.gui.IGuiIngredient;
 import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiIngredientGroup;
+import mezz.jei.gui.recipes.RecipeLayout;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.awt.*;
@@ -19,10 +22,12 @@ import java.util.List;
 public class JeiHacks {
     private static final Field guiIngredientRect;
     private static final Field guiIngredientGroupTooltips;
+    private static final Field recipeLayoutWrapper;
 
     static {
         guiIngredientRect = ObfuscationReflectionHelper.findField(GuiIngredient.class, "rect");
         guiIngredientGroupTooltips = ObfuscationReflectionHelper.findField(GuiIngredientGroup.class, "tooltipCallback");
+        recipeLayoutWrapper = ObfuscationReflectionHelper.findField(RecipeLayout.class, "recipeWrapper");
     }
 
     public static Rectangle getRect(IGuiIngredient<?> guiIngredient) {
@@ -46,6 +51,14 @@ public class JeiHacks {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+
+    public static IRecipeWrapper getRecipeWrapper(IRecipeLayout layout) {
+        try {
+            return ((IRecipeWrapper) recipeLayoutWrapper.get(layout));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 }
