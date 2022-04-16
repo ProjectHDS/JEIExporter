@@ -6,6 +6,6 @@ import mezz.jei.api.recipe.IRecipeWrapper;
  * @author youyihj
  */
 @FunctionalInterface
-public interface IRecipeExtraDataWrapperFactory<T extends IRecipeWrapper> {
-    IRecipeExtraDataWrapper build(T recipe);
+public interface IRecipeConverterFactory<T extends IRecipeWrapper> {
+    IRecipeConverter build(T recipe);
 }

@@ -31,6 +31,7 @@ repositories {
 dependencies {
     deobfCompile "mezz.jei:jei_${version_minecraft}:${version_jei}"
     deobfCompile "curse.maven:justenoughresources-240630:2728585"
+    deobfCompile "curse.maven:extrautils2-225561:2678374"
     compile fileTree(dir: 'lib', include: '*.jar')
 }
 

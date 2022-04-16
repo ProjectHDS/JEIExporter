@@ -5,26 +5,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
 import jeiexporter.handler.IIngredientHandler;
-import jeiexporter.handler.IRecipeExtraDataWrapper;
+import jeiexporter.handler.IRecipeConverter;
 import jeiexporter.handler.IngredientHandlers;
-import jeiexporter.handler.RecipeExtraDataWrapperFactories;
-import jeiexporter.jei.JEIConfig;
+import jeiexporter.handler.RecipeConverterFactories;
+import jeiexporter.handler.ingredient.IIngredient;
+import jeiexporter.handler.ingredient.SimpleIngredient;
 import jeiexporter.jei.OreDictEntry;
 import jeiexporter.render.IconList;
 import jeiexporter.util.JeiHacks;
 import mezz.jei.Internal;
-import mezz.jei.api.gui.IGuiIngredient;
-import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.recipe.IIngredientType;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 
-import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.*;
 
 public class JEIJsonWriter {
@@ -52,25 +48,18 @@ public class JEIJsonWriter {
 
     public void writeLayout(IRecipeLayout layout) throws IOException {
         IRecipeWrapper recipeWrapper = JeiHacks.getRecipeWrapper(layout);
-        Optional<IRecipeExtraDataWrapper> extraDataWrapper = RecipeExtraDataWrapperFactories.buildWrapper(recipeWrapper);
+        IRecipeConverter converter = RecipeConverterFactories.buildConverter(recipeWrapper);
         this.jsonWriter.beginObject();
-        if (extraDataWrapper.isPresent()) {
-            Map<String, JsonElement> recipeExtraData = extraDataWrapper.get().getRecipeExtraData();
-            for (Map.Entry<String, JsonElement> entry : recipeExtraData.entrySet()) {
-                writeEntry(entry);
-            }
+        Map<String, JsonElement> recipeExtraData = converter.getRecipeExtraData();
+        for (Map.Entry<String, JsonElement> entry : recipeExtraData.entrySet()) {
+            writeEntry(entry);
         }
         this.jsonWriter.name("input");
         this.jsonWriter.beginObject();
         this.jsonWriter.name("items");
         this.jsonWriter.beginArray();
-        for (IIngredientType<?> type : JEIConfig.getIngredientRegistry().getRegisteredIngredientTypes()) {
-            IGuiIngredientGroup<?> group = layout.getIngredientsGroup(type);
-            for (IGuiIngredient<?> ingredient : group.getGuiIngredients().values()) {
-                if (ingredient.isInput()) {
-                    writeIngredient(ingredient, extraDataWrapper.orElse(null));
-                }
-            }
+        for (IIngredient<?> ingredient : converter.getIngredients(layout, true)) {
+            writeIngredient(ingredient, converter);
         }
         this.jsonWriter.endArray();
         this.jsonWriter.endObject();
@@ -79,32 +68,28 @@ public class JEIJsonWriter {
         this.jsonWriter.beginObject();
         this.jsonWriter.name("items");
         this.jsonWriter.beginArray();
-        for (IIngredientType<?> type : JEIConfig.getIngredientRegistry().getRegisteredIngredientTypes()) {
-            IGuiIngredientGroup<?> group = layout.getIngredientsGroup(type);
-            for (IGuiIngredient<?> ingredient : group.getGuiIngredients().values()) {
-                if (!ingredient.isInput()) {
-                    writeIngredient(ingredient, extraDataWrapper.orElse(null));
-                }
-            }
+        for (IIngredient<?> ingredient : converter.getIngredients(layout, false)) {
+            writeIngredient(ingredient, converter);
         }
         this.jsonWriter.endArray();
         this.jsonWriter.endObject();
         this.jsonWriter.endObject();
     }
 
-    public <T> void writeIngredient(IGuiIngredient<T> ingredient, IRecipeExtraDataWrapper extraDataWrapper) throws IOException {
-        this.jsonWriter.beginObject();
-        if (!ingredient.getAllIngredients().isEmpty() && ingredient.getAllIngredients().get(0) != null) {
-            IIngredientHandler<T> handler = IngredientHandlers.getHandlerByIngredient(ingredient.getAllIngredients().get(0));
-            jsonWriter.name("amount").value(handler.getAmount(ingredient.getAllIngredients().get(0)));
+    public <T> void writeIngredient(IIngredient<T> ingredient, IRecipeConverter converter) throws IOException {
+        IIngredient<?> ingredient1 = convertItemsToOreDict(ingredient);
+        List<?> members = ingredient1.members();
+        Object firstIngredient = ingredient1.firstIngredient();
+        if (firstIngredient != null) {
+            IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(members.get(0));
+            jsonWriter.name("amount").value(handler.getAmount(members.get(0)));
         } else {
             jsonWriter.name("amount").value(0);
         }
-        Rectangle rect = JeiHacks.getRect(ingredient);
-        jsonWriter.name("x").value(rect.getX());
-        jsonWriter.name("y").value(rect.getY());
+        jsonWriter.name("x").value(ingredient1.getXPosition());
+        jsonWriter.name("y").value(ingredient1.getYPosition());
         jsonWriter.name("stacks").beginArray();
-        for (Object element : getIngredients(ingredient)) {
+        for (Object element : members) {
             if (element == null) continue;
             IIngredientHandler<Object> handler = IngredientHandlers.getHandlerByIngredient(element);
             jsonWriter.beginObject();
@@ -115,11 +100,9 @@ public class JEIJsonWriter {
             jsonWriter.endObject();
         }
         jsonWriter.endArray();
-        if (extraDataWrapper != null) {
-            Map<String, JsonElement> ingredientExtraData = extraDataWrapper.getIngredientExtraData(ingredient);
-            for (Map.Entry<String, JsonElement> entry : ingredientExtraData.entrySet()) {
-                writeEntry(entry);
-            }
+        Map<String, JsonElement> ingredientExtraData = converter.getIngredientExtraData(ingredient);
+        for (Map.Entry<String, JsonElement> entry : ingredientExtraData.entrySet()) {
+            writeEntry(entry);
         }
         jsonWriter.endObject();
     }
@@ -132,19 +115,17 @@ public class JEIJsonWriter {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> List<?> getIngredients(IGuiIngredient<T> ingredient) {
-        List<T> allIngredients = ingredient.getAllIngredients();
-        T displayedIngredient = ingredient.getDisplayedIngredient();
-        if (displayedIngredient instanceof ItemStack) {
-            List<ItemStack> allItems = new ArrayList<>((List<ItemStack>) allIngredients);
+    private IIngredient<?> convertItemsToOreDict(IIngredient<?> ingredient) {
+        if (ingredient.firstIngredient() instanceof ItemStack) {
+            List<ItemStack> allItems = new ArrayList<>(((List<ItemStack>) ingredient.members()));
             allItems.removeIf(stack -> stack == null || stack.isEmpty());
-            int count = ((ItemStack) displayedIngredient).getCount();
+            int count = ((ItemStack) Objects.requireNonNull(ingredient.firstIngredient())).getCount();
             String oreDict = Internal.getStackHelper().getOreDictEquivalent(allItems);
             if (oreDict != null) {
-                return Collections.singletonList(new OreDictEntry(oreDict, count));
+                return new SimpleIngredient<>(Collections.singletonList(new OreDictEntry(oreDict, count)), ingredient.getXPosition(), ingredient.getYPosition());
             }
         }
-        return allIngredients;
+        return ingredient;
     }
 
     private void writeEntry(Map.Entry<String, JsonElement> entry) throws IOException {

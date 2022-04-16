@@ -3,9 +3,10 @@ package jeiexporter.handler.jer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import jeiexporter.handler.IRecipeExtraDataWrapper;
+import jeiexporter.handler.IRecipeConverter;
+import jeiexporter.handler.ingredient.IIngredient;
 import jeresources.jei.mob.MobWrapper;
-import mezz.jei.api.gui.IGuiIngredient;
+import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * @author youyihj
  */
-public class MobDropExtraData implements IRecipeExtraDataWrapper {
+public class MobDropExtraData implements IRecipeConverter {
     private final MobWrapper wrapper;
 
     public MobDropExtraData(MobWrapper wrapper) {
@@ -36,8 +37,8 @@ public class MobDropExtraData implements IRecipeExtraDataWrapper {
     }
 
     @Override
-    public Map<String, JsonElement> getIngredientExtraData(IGuiIngredient<?> ingredient) {
-        Object stack = ingredient.getDisplayedIngredient();
+    public Map<String, JsonElement> getIngredientExtraData(IIngredient<?> ingredient) {
+        Object stack = ingredient.members().get(0);
         if (stack instanceof ItemStack) {
             List<String> toolTip = wrapper.getToolTip(((ItemStack) stack));
             if (toolTip != null) {
@@ -47,5 +48,10 @@ public class MobDropExtraData implements IRecipeExtraDataWrapper {
             }
         }
         return Collections.emptyMap();
+    }
+
+    @Override
+    public IRecipeWrapper getRecipe() {
+        return wrapper;
     }
 }
