@@ -38,7 +38,7 @@ public class MobDropExtraData implements IRecipeConverter {
 
     @Override
     public Map<String, JsonElement> getIngredientExtraData(IIngredient<?> ingredient) {
-        Object stack = ingredient.members().get(0);
+        Object stack = ingredient.firstIngredient();
         if (stack instanceof ItemStack) {
             List<String> toolTip = wrapper.getToolTip(((ItemStack) stack));
             if (toolTip != null) {

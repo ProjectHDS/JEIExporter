@@ -77,6 +77,7 @@ public class JEIJsonWriter {
     }
 
     public <T> void writeIngredient(IIngredient<T> ingredient, IRecipeConverter converter) throws IOException {
+        jsonWriter.beginObject();
         IIngredient<?> ingredient1 = convertItemsToOreDict(ingredient);
         List<?> members = ingredient1.members();
         Object firstIngredient = ingredient1.firstIngredient();
