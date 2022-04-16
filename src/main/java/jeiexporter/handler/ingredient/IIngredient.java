@@ -18,4 +18,8 @@ public interface IIngredient<T> {
     double getXPosition();
 
     double getYPosition();
+
+    default <U> IIngredient<U> withMembers(List<U> newMembers) {
+        return new SimpleIngredient<>(newMembers, getXPosition(), getYPosition());
+    }
 }

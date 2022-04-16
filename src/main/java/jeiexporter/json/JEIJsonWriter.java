@@ -9,7 +9,6 @@ import jeiexporter.handler.IRecipeConverter;
 import jeiexporter.handler.IngredientHandlers;
 import jeiexporter.handler.RecipeConverterFactories;
 import jeiexporter.handler.ingredient.IIngredient;
-import jeiexporter.handler.ingredient.SimpleIngredient;
 import jeiexporter.jei.OreDictEntry;
 import jeiexporter.render.IconList;
 import jeiexporter.util.JeiHacks;
@@ -123,7 +122,7 @@ public class JEIJsonWriter {
             int count = ((ItemStack) Objects.requireNonNull(ingredient.firstIngredient())).getCount();
             String oreDict = Internal.getStackHelper().getOreDictEquivalent(allItems);
             if (oreDict != null) {
-                return new SimpleIngredient<>(Collections.singletonList(new OreDictEntry(oreDict, count)), ingredient.getXPosition(), ingredient.getYPosition());
+                return ingredient.withMembers(Collections.singletonList(new OreDictEntry(oreDict, count)));
             }
         }
         return ingredient;
